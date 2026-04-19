@@ -1,6 +1,5 @@
 <div class="header">
-  <button class="undo-btn" (click)="undo()">Undo</button>
-  <button class="undo-btn" (click)="reset()">Reset</button>
+  <span class="level-title">Level {{ currentLevel }}</span>
 </div>
 <div class="grid-container">
   @for (row of displayGrid; let y = $index; track y) {
@@ -14,4 +13,10 @@
       }
     </div>
   }
+</div>
+<div class="header">
+  <div class="button-group">
+    <button class="undo-btn" (click)="undo()">Undo</button>
+    <button class="undo-btn" (click)="reset()">Reset</button>
+  </div>
 </div>
