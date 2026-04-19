@@ -5,7 +5,7 @@
   @for (row of displayGrid; let y = $index; track y) {
     <div class="row">
       @for (buttonText of row; let x = $index; track x) {
-        <button class="btn" [class]="getButtonClass(buttonText)" (click)="onButtonClick(x, y)">
+        <button class="btn" [class]="getButtonClass(buttonText) + ' ' + getCornerClass(x, y)" (click)="onButtonClick(x, y)">
           @if (isNumber(buttonText)) {
             <span class="number-circle">{{ buttonText }}</span>
           }

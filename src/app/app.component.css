@@ -54,70 +54,64 @@
   border: none;
 }
 
+.corner-tr { border-top-right-radius: 25% 25%; }
+.corner-tl { border-top-left-radius: 25% 25%; }
+.corner-br { border-bottom-right-radius: 25% 25%; }
+.corner-bl { border-bottom-left-radius: 25% 25%; }
+
 /* Sea - no text */
 .btn-sea {
   background: #1e90ff;
-  border-radius: 0;
 }
 
 /* Beach - 0 */
 .btn-beach {
   background: #ffe4b5;
-  border-radius: 0;
 }
 
 /* Grassy Dunes - 1 */
 .btn-grassy-dunes {
   background: #8bc34a;
-  border-radius: 0;
 }
 
 /* Grass - 2 */
 .btn-grass {
   background: #689f38;
-  border-radius: 0;
 }
 
 /* Forest - 3 */
 .btn-forest {
   background: #2e7d32;
-  border-radius: 0;
 }
 
 /* Hills - 4 */
 .btn-hills {
   background: #8d6e63;
-  border-radius: 0;
 }
 
 /* Mountain - 4 */
 .btn-mountain-4 {
   background: #4a6741;
-  border-radius: 0;
 }
 
 /* Mountain - 5 */
 .btn-mountain-5 {
   background: #5c5c5c;
-  border-radius: 0;
 }
 
 /* Mountain - 6 */
 .btn-mountain-6 {
   background: #787878;
-  border-radius: 0;
 }
 
 /* Mountain - 7 */
 .btn-mountain-7 {
   background: #a8a8a8;
-  border-radius: 0;
 }
 
 /* Mountain - 8+ */
 .btn-mountain-8 {
   background: #ffffff;
-  border-radius: 0;
 }
 
 /* Number circle */

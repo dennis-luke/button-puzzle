@@ -270,6 +270,28 @@ export class AppComponent implements OnInit {
     }
   }
 
+  getCornerClass(x: number, y: number): string {
+    const isSea = (cx: number, cy: number): boolean => {
+      if (cx < 0 || cx >= this.displayGrid[0].length || cy < 0 || cy >= this.displayGrid.length) {
+        return true;
+      }
+      return this.displayGrid[cy][cx] === '_';
+    };
+
+    const hasSeaAbove = isSea(x, y - 1);
+    const hasSeaBelow = isSea(x, y + 1);
+    const hasSeaLeft = isSea(x - 1, y);
+    const hasSeaRight = isSea(x + 1, y);
+
+    let classes = '';
+    if (hasSeaAbove && hasSeaRight) classes += ' corner-tr';
+    if (hasSeaAbove && hasSeaLeft) classes += ' corner-tl';
+    if (hasSeaBelow && hasSeaRight) classes += ' corner-br';
+    if (hasSeaBelow && hasSeaLeft) classes += ' corner-bl';
+
+    return classes;
+  }
+
   private raiseNeighboursByOne(x: number, y: number) {
     const minX = Math.max(x - 1, 0);
     const maxX = Math.min(x + 1, this.numColumns - 1);
