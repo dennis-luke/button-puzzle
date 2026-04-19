@@ -1,5 +1,6 @@
 <div class="header">
   <button class="undo-btn" (click)="undo()">Undo</button>
+  <button class="undo-btn" (click)="reset()">Reset</button>
 </div>
 <div class="grid-container">
   @for (row of displayGrid; let y = $index; track y) {

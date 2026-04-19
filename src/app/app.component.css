@@ -2,6 +2,7 @@
   padding: 20px;
   display: flex;
   justify-content: center;
+  gap: 10px;
 }
 
 .undo-btn {
@@ -62,6 +63,7 @@
 /* Sea - no text */
 .btn-sea {
   background: #1e90ff;
+  cursor: default;
 }
 
 /* Beach - 0 */
