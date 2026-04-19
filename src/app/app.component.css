@@ -1,0 +1,138 @@
+.header {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.undo-btn {
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px 24px;
+  background: #8b4513;
+  color: #f4e4bc;
+  border: 3px solid #4a3520;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.undo-btn:hover {
+  background: #9b5523;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.undo-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  align-items: center;
+  background: #1e90ff;
+}
+
+.row {
+  display: flex;
+}
+
+.btn {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: none;
+}
+
+/* Sea - no text */
+.btn-sea {
+  background: #1e90ff;
+  border-radius: 0;
+}
+
+/* Beach - 0 */
+.btn-beach {
+  background: #ffe4b5;
+  border-radius: 0;
+}
+
+/* Grassy Dunes - 1 */
+.btn-grassy-dunes {
+  background: #8bc34a;
+  border-radius: 0;
+}
+
+/* Grass - 2 */
+.btn-grass {
+  background: #689f38;
+  border-radius: 0;
+}
+
+/* Forest - 3 */
+.btn-forest {
+  background: #2e7d32;
+  border-radius: 0;
+}
+
+/* Hills - 4 */
+.btn-hills {
+  background: #8d6e63;
+  border-radius: 0;
+}
+
+/* Mountain - 4 */
+.btn-mountain-4 {
+  background: #4a6741;
+  border-radius: 0;
+}
+
+/* Mountain - 5 */
+.btn-mountain-5 {
+  background: #5c5c5c;
+  border-radius: 0;
+}
+
+/* Mountain - 6 */
+.btn-mountain-6 {
+  background: #787878;
+  border-radius: 0;
+}
+
+/* Mountain - 7 */
+.btn-mountain-7 {
+  background: #a8a8a8;
+  border-radius: 0;
+}
+
+/* Mountain - 8+ */
+.btn-mountain-8 {
+  background: #ffffff;
+  border-radius: 0;
+}
+
+/* Number circle */
+.number-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #8b4513;
+  border: 2px solid #4a3520;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  font-size: 12px;
+  color: #f4e4bc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}

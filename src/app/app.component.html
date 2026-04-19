@@ -1,0 +1,16 @@
+<div class="header">
+  <button class="undo-btn" (click)="undo()">Undo</button>
+</div>
+<div class="grid-container">
+  @for (row of displayGrid; let y = $index; track y) {
+    <div class="row">
+      @for (buttonText of row; let x = $index; track x) {
+        <button class="btn" [class]="getButtonClass(buttonText)" (click)="onButtonClick(x, y)">
+          @if (isNumber(buttonText)) {
+            <span class="number-circle">{{ buttonText }}</span>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>
