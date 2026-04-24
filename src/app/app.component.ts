@@ -288,6 +288,7 @@ export class AppComponent implements OnInit {
   };
 
   currentLevel = 1;
+  showLevelComplete = false;
   buttonGrid: string[][] = [];
   private initialGrid!: string[][];
   displayGrid: string[][] = [];
@@ -300,7 +301,15 @@ export class AppComponent implements OnInit {
   private trimRight = 0;
 
   ngOnInit(): void {
+    const savedLevel = localStorage.getItem('buttonPuzzleLevel');
+    if (savedLevel) {
+      this.currentLevel = parseInt(savedLevel, 10);
+    }
     this.loadLevel(this.currentLevel);
+  }
+
+  private saveLevelToStorage() {
+    localStorage.setItem('buttonPuzzleLevel', this.currentLevel.toString());
   }
 
   private loadLevel(level: number) {
@@ -397,7 +406,7 @@ export class AppComponent implements OnInit {
 
       // Check if level is complete
       if (this.isLevelComplete()) {
-        setTimeout(() => this.nextLevel(), 300);
+        setTimeout(() => this.showLevelComplete = true, 300);
       }
     } else {
       throw Error('Unexpected text on button: ' + previousText);
@@ -417,9 +426,15 @@ export class AppComponent implements OnInit {
 
   private nextLevel() {
     this.currentLevel++;
+    this.saveLevelToStorage();
     if (this.levels[this.currentLevel]) {
       this.loadLevel(this.currentLevel);
     }
+  }
+
+  nextLevelClick() {
+    this.showLevelComplete = false;
+    setTimeout(() => this.nextLevel(), 100);
   }
 
   private refreshDisplayGrid() {

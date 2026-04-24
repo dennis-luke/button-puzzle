@@ -153,3 +153,66 @@
   color: #f4e4bc;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
+
+/* Dialog overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog {
+  background: #f4e4bc;
+  border: 4px solid #8b4513;
+  border-radius: 16px;
+  padding: 30px 50px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.dialog h2 {
+  font-family: 'Georgia', serif;
+  color: #8b4513;
+  margin: 0 0 15px 0;
+  font-size: 28px;
+}
+
+.dialog p {
+  font-family: 'Georgia', serif;
+  color: #4a3520;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+}
+
+.next-btn {
+  font-size: 18px;
+  cursor: pointer;
+  padding: 12px 30px;
+  background: #8b4513;
+  color: #f4e4bc;
+  border: 3px solid #4a3520;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.next-btn:hover {
+  background: #9b5523;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.next-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}

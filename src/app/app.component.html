@@ -20,3 +20,13 @@
     <button class="undo-btn" (click)="reset()">Reset</button>
   </div>
 </div>
+
+@if (showLevelComplete) {
+  <div class="dialog-overlay">
+    <div class="dialog">
+      <h2>Well Done!</h2>
+      <p>Level {{ currentLevel }} completed</p>
+      <button class="next-btn" (click)="nextLevelClick()">Next Level</button>
+    </div>
+  </div>
+}
