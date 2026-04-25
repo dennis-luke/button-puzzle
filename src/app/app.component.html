@@ -1,5 +1,21 @@
 <div class="header">
-  <span class="level-title">Level {{ currentLevel }}</span>
+  <span class="header-far-spacer"></span>
+  <span class="header-corner"></span>
+  <span class="header-center-spacer"></span>
+  <span class="header-center">
+    <span class="level-title">Level {{ currentLevel }}</span>
+  </span>
+  <span class="header-center-spacer"></span>
+  <span class="header-corner">
+    <button class="menu-btn" (click)="openLevelMenu()">
+      <span class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </span>
+  <span class="header-far-spacer"></span>
 </div>
 <div class="grid-container">
   @for (row of displayGrid; let y = $index; track y) {
@@ -14,7 +30,7 @@
     </div>
   }
 </div>
-<div class="header">
+<div class="footer">
   <div class="button-group">
     <button class="undo-btn" (click)="undo()">Undo</button>
     <button class="undo-btn" (click)="reset()">Reset</button>
@@ -27,6 +43,28 @@
       <h2>Well Done!</h2>
       <p>Level {{ currentLevel }} completed</p>
       <button class="next-btn" (click)="nextLevelClick()">Next Level</button>
+    </div>
+  </div>
+}
+
+@if (showLevelMenu) {
+  <div class="dialog-overlay" (click)="closeLevelMenu()">
+    <div class="dialog level-menu" (click)="$event.stopPropagation()">
+      <h2>Select Level</h2>
+      <div class="level-grid">
+        @for (level of levelsList; track level) {
+          <button
+            class="level-btn"
+            [class.completed]="isLevelCompleted(level)"
+            [class.current]="isLevelCurrent(level)"
+            [disabled]="!isLevelUnlocked(level)"
+            (click)="selectLevel(level)"
+          >
+            {{ level }}
+          </button>
+        }
+      </div>
+      <button class="close-btn" (click)="closeLevelMenu()">Close</button>
     </div>
   </div>
 }
