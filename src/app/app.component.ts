@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   currentLevel = 1;
   showLevelComplete = false;
   showLevelMenu = false;
+  showRules = false;
   unlockedLevels: Set<number> = new Set([1]);
   buttonGrid: string[][] = [];
   private initialGrid!: string[][];
@@ -51,6 +52,14 @@ export class AppComponent implements OnInit {
 
   closeLevelMenu() {
     this.showLevelMenu = false;
+  }
+
+  openRules() {
+    this.showRules = true;
+  }
+
+  closeRules() {
+    this.showRules = false;
   }
 
   selectLevel(level: number) {

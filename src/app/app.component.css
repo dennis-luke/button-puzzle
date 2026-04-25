@@ -90,6 +90,35 @@
   border-radius: 2px;
 }
 
+.rules-icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20px;
+  height: 18px;
+}
+
+.rules-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 4px;
+}
+
+.bullet-point {
+  width: 4px;
+  height: 4px;
+  background: #f4e4bc;
+  border-radius: 1px;
+}
+
+.line {
+  flex: 1;
+  height: 2px;
+  background: #f4e4bc;
+  border-radius: 1px;
+}
+
 .level-title {
   font-size: 20px;
   cursor: pointer;
@@ -303,6 +332,18 @@
 
 .level-menu {
   max-width: 400px;
+}
+
+.rules-dialog {
+  max-width: 400px;
+}
+
+.rules-text {
+  font-family: 'Georgia', serif;
+  color: #4a3520;
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .level-grid {

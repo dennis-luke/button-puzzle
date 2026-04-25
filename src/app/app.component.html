@@ -1,6 +1,14 @@
 <div class="header">
   <span class="header-far-spacer"></span>
-  <span class="header-corner"></span>
+  <span class="header-corner">
+    <button class="menu-btn" (click)="openRules()">
+      <span class="rules-icon">
+        <span class="rules-row"><span class="bullet-point"></span><span class="line"></span></span>
+        <span class="rules-row"><span class="bullet-point"></span><span class="line"></span></span>
+        <span class="rules-row"><span class="bullet-point"></span><span class="line"></span></span>
+      </span>
+    </button>
+  </span>
   <span class="header-center-spacer"></span>
   <span class="header-center">
     <span class="level-title">Level {{ currentLevel }}</span>
@@ -65,6 +73,19 @@
         }
       </div>
       <button class="close-btn" (click)="closeLevelMenu()">Close</button>
+    </div>
+  </div>
+}
+
+@if (showRules) {
+  <div class="dialog-overlay" (click)="closeRules()">
+    <div class="dialog rules-dialog" (click)="$event.stopPropagation()">
+      <h2>Rules</h2>
+      <p class="rules-text">Welcome Poseidon! Here is how you rid the seas and oceans of these pesky islands!</p>
+      <p class="rules-text">Clicking on a square where the total of the up to eight surrounding squares is equal to the square, will return that square to the sea.</p>
+      <p class="rules-text">Otherwise clicking on a square will cause all the land in the eight surrounding squares to increase by one.</p>
+      <p class="rules-text">May you return our seas and oceans to their former glory!</p>
+      <button class="close-btn" (click)="closeRules()">Close</button>
     </div>
   </div>
 }
