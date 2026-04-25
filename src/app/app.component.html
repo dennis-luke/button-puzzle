@@ -55,7 +55,6 @@
         @for (level of levelsList; track level) {
           <button
             class="level-btn"
-            [class.completed]="isLevelCompleted(level)"
             [class.current]="isLevelCurrent(level)"
             [disabled]="!isLevelUnlocked(level)"
             (click)="selectLevel(level)"

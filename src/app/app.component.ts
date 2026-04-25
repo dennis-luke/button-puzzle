@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   currentLevel = 1;
   showLevelComplete = false;
   showLevelMenu = false;
-  completedLevels: Set<number> = new Set();
+  unlockedLevels: Set<number> = new Set([1]);
   buttonGrid: string[][] = [];
   private initialGrid!: string[][];
   displayGrid: string[][] = [];
@@ -33,16 +33,16 @@ export class AppComponent implements OnInit {
     if (savedLevel) {
       this.currentLevel = parseInt(savedLevel, 10);
     }
-    const savedCompleted = localStorage.getItem('buttonPuzzleCompleted');
-    if (savedCompleted) {
-      this.completedLevels = new Set(JSON.parse(savedCompleted));
+    const savedUnlocked = localStorage.getItem('buttonPuzzleUnlocked');
+    if (savedUnlocked) {
+      this.unlockedLevels = new Set(JSON.parse(savedUnlocked));
     }
     this.loadLevel(this.currentLevel);
   }
 
   private saveLevelToStorage() {
     localStorage.setItem('buttonPuzzleLevel', this.currentLevel.toString());
-    localStorage.setItem('buttonPuzzleCompleted', JSON.stringify([...this.completedLevels]));
+    localStorage.setItem('buttonPuzzleUnlocked', JSON.stringify([...this.unlockedLevels]));
   }
 
   openLevelMenu() {
@@ -64,11 +64,7 @@ export class AppComponent implements OnInit {
   }
 
   isLevelUnlocked(level: number): boolean {
-    return level <= this.currentLevel;
-  }
-
-  isLevelCompleted(level: number): boolean {
-    return this.completedLevels.has(level);
+    return this.unlockedLevels.has(level);
   }
 
   isLevelCurrent(level: number): boolean {
@@ -174,7 +170,10 @@ export class AppComponent implements OnInit {
 
       // Check if level is complete
       if (this.isLevelComplete()) {
-        this.completedLevels.add(this.currentLevel);
+        const nextLevel = this.currentLevel + 1;
+        if (nextLevel <= this.levelsService.getMaxLevel()) {
+          this.unlockedLevels.add(nextLevel);
+        }
         this.saveLevelToStorage();
         setTimeout(() => this.showLevelComplete = true, 300);
       }
