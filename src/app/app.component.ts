@@ -12,10 +12,14 @@ import { LevelsService } from './levels.service';
 export class AppComponent implements OnInit {
 
   currentLevel = 1;
+  currentGroup = 'Ionian Sea';
   showLevelComplete = false;
   showLevelMenu = false;
   showRules = false;
-  unlockedLevels: Set<number> = new Set([1]);
+  showBadgeDialog = false;
+  unlockedLevels: Map<string, Set<number>> = new Map([['Ionian Sea', new Set([1])]]);
+  unlockedGroups: Set<string> = new Set(['Ionian Sea']);
+  earnedBadges: Set<string> = new Set();
   buttonGrid: string[][] = [];
   private initialGrid!: string[][];
   displayGrid: string[][] = [];
@@ -34,16 +38,36 @@ export class AppComponent implements OnInit {
     if (savedLevel) {
       this.currentLevel = parseInt(savedLevel, 10);
     }
+    const savedGroup = localStorage.getItem('buttonPuzzleGroup');
+    if (savedGroup) {
+      this.currentGroup = savedGroup;
+    }
     const savedUnlocked = localStorage.getItem('buttonPuzzleUnlocked');
     if (savedUnlocked) {
-      this.unlockedLevels = new Set(JSON.parse(savedUnlocked));
+      const parsed = JSON.parse(savedUnlocked);
+      this.unlockedLevels = new Map(Object.entries(parsed).map(([k, v]) => [k, new Set(v as number[])]));
     }
-    this.loadLevel(this.currentLevel);
+    const savedUnlockedGroups = localStorage.getItem('buttonPuzzleUnlockedGroups');
+    if (savedUnlockedGroups) {
+      this.unlockedGroups = new Set(JSON.parse(savedUnlockedGroups));
+    }
+    const savedBadges = localStorage.getItem('buttonPuzzleBadges');
+    if (savedBadges) {
+      this.earnedBadges = new Set(JSON.parse(savedBadges));
+    }
+    this.loadLevel(this.currentLevel, this.currentGroup);
   }
 
   private saveLevelToStorage() {
     localStorage.setItem('buttonPuzzleLevel', this.currentLevel.toString());
-    localStorage.setItem('buttonPuzzleUnlocked', JSON.stringify([...this.unlockedLevels]));
+    localStorage.setItem('buttonPuzzleGroup', this.currentGroup);
+    const unlockedObj: { [key: string]: number[] } = {};
+    this.unlockedLevels.forEach((levels, group) => {
+      unlockedObj[group] = [...levels];
+    });
+    localStorage.setItem('buttonPuzzleUnlocked', JSON.stringify(unlockedObj));
+    localStorage.setItem('buttonPuzzleUnlockedGroups', JSON.stringify([...this.unlockedGroups]));
+    localStorage.setItem('buttonPuzzleBadges', JSON.stringify([...this.earnedBadges]));
   }
 
   openLevelMenu() {
@@ -62,30 +86,146 @@ export class AppComponent implements OnInit {
     this.showRules = false;
   }
 
-  selectLevel(level: number) {
-    if (!this.isLevelUnlocked(level)) {
+  openBadgeDialog() {
+    this.showBadgeDialog = true;
+  }
+
+  closeBadgeDialog() {
+    this.showBadgeDialog = false;
+  }
+
+  goToLevelMenuFromBadge() {
+    this.closeBadgeDialog();
+    this.openLevelMenu();
+  }
+
+  getBadgeColor(groupName: string): string {
+    switch (groupName) {
+      case 'Ionian Sea': return '#e53935';
+      case 'Aegean Sea': return '#ff9800';
+      case 'Tyrrhenian Sea': return '#ffeb3b';
+      default: return '#8b4513';
+    }
+  }
+
+  selectLevel(level: number, groupName: string) {
+    if (!this.isLevelUnlockedInGroup(level, groupName)) {
       return;
     }
     this.currentLevel = level;
+    this.currentGroup = groupName;
     this.saveLevelToStorage();
-    this.loadLevel(this.currentLevel);
+    this.loadLevel(this.currentLevel, this.currentGroup);
     this.closeLevelMenu();
   }
 
-  isLevelUnlocked(level: number): boolean {
-    return this.unlockedLevels.has(level);
+  private checkAndUnlockGroups() {
+    const groups = this.levelsService.getGroups();
+    for (let i = 0; i < groups.length; i++) {
+      const group = groups[i];
+      if (this.unlockedGroups.has(group.group)) {
+        continue;
+      }
+      const prevGroup = groups[i - 1];
+      if (!prevGroup) {
+        continue;
+      }
+      const prevGroupLevels = this.levelsService.getLevelsInGroup(prevGroup.group);
+      const prevUnlockedLevels = this.unlockedLevels.get(prevGroup.group);
+      const allPrevCompleted = prevGroupLevels.every(lvl => prevUnlockedLevels ? prevUnlockedLevels.has(lvl) : false);
+      if (allPrevCompleted) {
+        const groupLevels = this.levelsService.getLevelsInGroup(group.group);
+        let newGroupLevels = this.unlockedLevels.get(group.group);
+        if (!newGroupLevels) {
+          newGroupLevels = new Set();
+          this.unlockedLevels.set(group.group, newGroupLevels);
+        }
+        newGroupLevels.add(groupLevels[0]);
+        this.unlockedGroups.add(group.group);
+        if (prevGroup.group === 'Ionian Sea') {
+          const nextGroups = groups.slice(i + 1);
+          for (const nextGroup of nextGroups) {
+            const nextGroupLevels = this.levelsService.getLevelsInGroup(nextGroup.group);
+            if (nextGroupLevels.length > 0) {
+              let ngLevels = this.unlockedLevels.get(nextGroup.group);
+              if (!ngLevels) {
+                ngLevels = new Set();
+                this.unlockedLevels.set(nextGroup.group, ngLevels);
+              }
+              ngLevels.add(nextGroupLevels[0]);
+              this.unlockedGroups.add(nextGroup.group);
+            }
+          }
+        }
+      }
+    }
   }
 
-  isLevelCurrent(level: number): boolean {
-    return level === this.currentLevel;
+  isGroupUnlocked(groupName: string): boolean {
+    return this.unlockedGroups.has(groupName);
+  }
+
+  isGroupUnlockedAndHasFirstLevelUnlocked(groupName: string): boolean {
+    if (!this.isGroupUnlocked(groupName)) {
+      return false;
+    }
+    const levels = this.levelsService.getLevelsInGroup(groupName);
+    const groupLevels = this.unlockedLevels.get(groupName);
+    return levels.length > 0 && groupLevels ? groupLevels.has(levels[0]) : false;
+  }
+
+  isLevelUnlocked(level: number): boolean {
+    const groupLevels = this.unlockedLevels.get(this.currentGroup);
+    return groupLevels ? groupLevels.has(level) : false;
+  }
+
+  isLevelCurrent(level: number, groupName: string): boolean {
+    return level === this.currentLevel && groupName === this.currentGroup;
+  }
+
+  isLevelUnlockedInGroup(level: number, groupName: string): boolean {
+    const groupLevels = this.unlockedLevels.get(groupName);
+    return groupLevels ? groupLevels.has(level) : false;
+  }
+
+  hasNextLevel(): boolean {
+    const currentGroupLevels = this.levelsService.getLevelsInGroup(this.currentGroup);
+    const currentIndex = currentGroupLevels.indexOf(this.currentLevel);
+    if (currentIndex < currentGroupLevels.length - 1) {
+      return true;
+    }
+    const groups = this.levelsService.getGroups();
+    const currentGroupIndex = groups.findIndex(g => g.group === this.currentGroup);
+    return currentGroupIndex < groups.length - 1;
   }
 
   get levelsList(): number[] {
     return Array.from({ length: this.levelsService.getMaxLevel() }, (_, i) => i + 1);
   }
 
-  private loadLevel(level: number) {
-    const levelData = this.levelsService.getLevel(level);
+  get levelTitle(): string {
+    const levelInGroup = this.levelsService.getLevelsInGroup(this.currentGroup).indexOf(this.currentLevel) + 1;
+    return `${this.currentGroup} ${levelInGroup}`;
+  }
+
+  get groups() {
+    return this.levelsService.getGroups();
+  }
+
+  get earnedBadgesList(): string[] {
+    return [...this.earnedBadges];
+  }
+
+  hasEarnedBadge(groupName: string): boolean {
+    return this.earnedBadges.has(groupName);
+  }
+
+  getLevelsInGroup(groupName: string): number[] {
+    return this.levelsService.getLevelsInGroup(groupName);
+  }
+
+  private loadLevel(level: number, groupName: string) {
+    const levelData = this.levelsService.getLevel(level, groupName);
     if (!levelData) {
       return;
     }
@@ -168,23 +308,47 @@ export class AppComponent implements OnInit {
       return;
     }
     if (this.isNonNegativeIntegerString(previousText)) {
-      this.buttonGridHistory.push(structuredClone(this.buttonGrid));
       const previousValue = parseInt(previousText);
-      if (previousValue === this.countNeighbours(actualX, actualY)) {
+      const neighborsCount = this.countNeighbours(actualX, actualY);
+      const willClear = previousValue === neighborsCount;
+      const hasNumericNeighbors = this.hasNumericNeighbors(actualX, actualY);
+
+      if (!willClear && !hasNumericNeighbors) {
+        return;
+      }
+
+      this.buttonGridHistory.push(structuredClone(this.buttonGrid));
+
+      if (willClear) {
         this.buttonGrid[actualY][actualX] = '_';
       } else {
         this.raiseNeighboursByOne(actualX, actualY);
       }
+
       this.refreshDisplayGrid();
 
       // Check if level is complete
       if (this.isLevelComplete()) {
-        const nextLevel = this.currentLevel + 1;
-        if (nextLevel <= this.levelsService.getMaxLevel()) {
-          this.unlockedLevels.add(nextLevel);
+        const currentGroupLevels = this.levelsService.getLevelsInGroup(this.currentGroup);
+        const isLastInGroup = this.currentLevel === currentGroupLevels[currentGroupLevels.length - 1];
+        if (isLastInGroup) {
+          this.earnedBadges.add(this.currentGroup);
+          this.checkAndUnlockGroups();
+          this.saveLevelToStorage();
+          setTimeout(() => {
+            this.showLevelComplete = false;
+            this.openBadgeDialog();
+          }, 300);
+        } else {
+          let groupLevels = this.unlockedLevels.get(this.currentGroup);
+          if (!groupLevels) {
+            groupLevels = new Set();
+            this.unlockedLevels.set(this.currentGroup, groupLevels);
+          }
+          groupLevels.add(this.currentLevel + 1);
+          this.saveLevelToStorage();
+          setTimeout(() => this.showLevelComplete = true, 300);
         }
-        this.saveLevelToStorage();
-        setTimeout(() => this.showLevelComplete = true, 300);
       }
     } else {
       throw Error('Unexpected text on button: ' + previousText);
@@ -203,11 +367,21 @@ export class AppComponent implements OnInit {
   }
 
   private nextLevel() {
-    this.currentLevel++;
-    this.saveLevelToStorage();
-    if (this.currentLevel <= this.levelsService.getMaxLevel()) {
-      this.loadLevel(this.currentLevel);
+    const currentGroupLevels = this.levelsService.getLevelsInGroup(this.currentGroup);
+    const currentIndex = currentGroupLevels.indexOf(this.currentLevel);
+    if (currentIndex < currentGroupLevels.length - 1) {
+      this.currentLevel++;
+    } else {
+      const groups = this.levelsService.getGroups();
+      const currentGroupIndex = groups.findIndex(g => g.group === this.currentGroup);
+      if (currentGroupIndex < groups.length - 1) {
+        const nextGroup = groups[currentGroupIndex + 1];
+        this.currentGroup = nextGroup.group;
+        this.currentLevel = 1;
+      }
     }
+    this.saveLevelToStorage();
+    this.loadLevel(this.currentLevel, this.currentGroup);
   }
 
   nextLevelClick() {
@@ -260,6 +434,24 @@ export class AppComponent implements OnInit {
       }
     }
     return count;
+  }
+
+  private hasNumericNeighbors(x: number, y: number): boolean {
+    const minX = Math.max(x - 1, 0);
+    const maxX = Math.min(x + 1, this.numColumns - 1);
+    const minY = Math.max(y - 1, 0);
+    const maxY = Math.min(y + 1, this.numRows - 1);
+    for (let i = minX; i <= maxX; i++) {
+      for (let j = minY; j <= maxY; j++) {
+        if (i === x && j === y) {
+          continue;
+        }
+        if (this.isNonNegativeIntegerString(this.buttonGrid[j][i])) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private isNonNegativeIntegerString(str: string): boolean {

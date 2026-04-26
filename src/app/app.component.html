@@ -11,7 +11,7 @@
   </span>
   <span class="header-center-spacer"></span>
   <span class="header-center">
-    <span class="level-title">Level {{ currentLevel }}</span>
+    <span class="level-title">{{ levelTitle }}</span>
   </span>
   <span class="header-center-spacer"></span>
   <span class="header-corner">
@@ -45,13 +45,22 @@
     <button class="undo-btn" (click)="reset()">Reset</button>
   </div>
 </div>
+@if (earnedBadgesList.length > 0) {
+  <div class="badges-row">
+    @for (badge of earnedBadgesList; track badge) {
+      <div class="badge" [style.background-color]="getBadgeColor(badge)"></div>
+    }
+  </div>
+}
 
 @if (showLevelComplete) {
   <div class="dialog-overlay">
     <div class="dialog">
       <h2>Well Done!</h2>
-      <p>Level {{ currentLevel }} completed</p>
-      <button class="next-btn" (click)="nextLevelClick()">Next Level</button>
+      <p>{{ levelTitle }} completed</p>
+      @if (hasNextLevel()) {
+        <button class="next-btn" (click)="nextLevelClick()">Next Level</button>
+      }
     </div>
   </div>
 }
@@ -60,18 +69,25 @@
   <div class="dialog-overlay" (click)="closeLevelMenu()">
     <div class="dialog level-menu" (click)="$event.stopPropagation()">
       <h2>Select Level</h2>
-      <div class="level-grid">
-        @for (level of levelsList; track level) {
-          <button
-            class="level-btn"
-            [class.current]="isLevelCurrent(level)"
-            [disabled]="!isLevelUnlocked(level)"
-            (click)="selectLevel(level)"
-          >
-            {{ level }}
-          </button>
+      @for (group of groups; track group.group) {
+        @if (isGroupUnlocked(group.group)) {
+          <div class="level-group">
+            <h3 class="group-title">{{ group.group }}</h3>
+            <div class="level-grid">
+              @for (level of getLevelsInGroup(group.group); track level) {
+                <button
+                  class="level-btn"
+                  [class.current]="isLevelCurrent(level, group.group)"
+                  [disabled]="!isLevelUnlockedInGroup(level, group.group)"
+                  (click)="selectLevel(level, group.group)"
+                >
+                  {{ level }}
+                </button>
+              }
+            </div>
+          </div>
         }
-      </div>
+      }
       <button class="close-btn" (click)="closeLevelMenu()">Close</button>
     </div>
   </div>
@@ -86,6 +102,17 @@
       <p class="rules-text">Otherwise clicking on a square will cause all the land in the eight surrounding squares to increase by one.</p>
       <p class="rules-text">May you return our seas and oceans to their former glory!</p>
       <button class="close-btn" (click)="closeRules()">Close</button>
+    </div>
+  </div>
+}
+
+@if (showBadgeDialog) {
+  <div class="dialog-overlay" (click)="closeBadgeDialog()">
+    <div class="dialog badge-dialog" (click)="$event.stopPropagation()">
+      <h2>Badge Earned!</h2>
+      <div class="badge-display" [style.background-color]="getBadgeColor(currentGroup)"></div>
+      <p>{{ currentGroup }} completed!</p>
+      <button class="next-btn" (click)="goToLevelMenuFromBadge()">Levels</button>
     </div>
   </div>
 }
